@@ -47,7 +47,7 @@ export const RecorderPanel = ({
 
       <div className="flex flex-wrap items-center gap-3">
         {!isRecording ? (
-          <Button variant="hero" size="lg" onClick={start} className={state === "recording" ? "animate-pulse-glow" : ""}>
+          <Button variant="hero" size="lg" onClick={start}>
             <Mic className="h-4 w-4" />
             {recording ? "Record again" : "Start recording"}
           </Button>
