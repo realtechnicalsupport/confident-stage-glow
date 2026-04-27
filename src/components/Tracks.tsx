@@ -1,33 +1,38 @@
+import { Link } from "react-router-dom";
 import { Mic, Zap, Briefcase, Activity, ArrowUpRight } from "lucide-react";
 
 const TRACKS = [
   {
     icon: Mic,
     name: "Public Speaking",
-    duration: "12 sessions · 4 weeks",
+    duration: "5 lessons · drills inside",
     desc: "Build a talk that lands. Hooks, structure, pacing, and the pause that earns attention.",
     accent: "from-primary/20 to-transparent",
+    href: "/tracks/public-speaking",
   },
   {
     icon: Zap,
     name: "Impromptu Speech",
-    duration: "Daily · 60 seconds",
+    duration: "24 prompts · 3 difficulties",
     desc: "Train the muscle that responds when you're put on the spot — meetings, toasts, hot seats.",
     accent: "from-accent/20 to-transparent",
+    href: "/tracks/impromptu",
   },
   {
     icon: Briefcase,
     name: "Job Interviews",
-    duration: "8 sessions · 2 weeks",
+    duration: "10 questions · STAR + examples",
     desc: "STAR stories, salary talk, and the answer to 'tell me about yourself' that doesn't ramble.",
     accent: "from-primary/20 to-transparent",
+    href: "/tracks/interviews",
   },
   {
     icon: Activity,
     name: "Body Language",
-    duration: "6 sessions · 2 weeks",
+    duration: "4 live drills · breathing + pose",
     desc: "Stance, gestures, eye contact, and the breath patterns that quiet a shaky voice.",
     accent: "from-accent/20 to-transparent",
+    href: "/tracks/body-language",
   },
 ];
 
@@ -45,16 +50,17 @@ export const Tracks = () => {
           </h2>
         </div>
         <p className="text-muted-foreground max-w-sm text-pretty">
-          Short, repeatable sessions designed by speaking coaches. Five minutes a day is
-          enough to feel the shift in two weeks.
+          Each track is its own page with real lessons, drills, prompts, and a built-in recorder.
+          Free. No sign-up. Five minutes a day is enough.
         </p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         {TRACKS.map((t, i) => (
-          <article
+          <Link
+            to={t.href}
             key={t.name}
-            className="group relative bg-card-gradient border border-border rounded-3xl p-8 md:p-10 hover:border-primary/40 transition-all duration-500 cursor-pointer overflow-hidden"
+            className="group relative bg-card-gradient border border-border rounded-3xl p-8 md:p-10 hover:border-primary/40 transition-all duration-500 cursor-pointer overflow-hidden block"
             style={{ animationDelay: `${i * 80}ms` }}
           >
             <div className={`absolute -top-20 -right-20 h-64 w-64 rounded-full bg-gradient-radial ${t.accent} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
@@ -71,9 +77,12 @@ export const Tracks = () => {
               <h3 className="font-display text-3xl md:text-4xl font-semibold mb-4 leading-tight">
                 {t.name}
               </h3>
-              <p className="text-muted-foreground text-pretty leading-relaxed">{t.desc}</p>
+              <p className="text-muted-foreground text-pretty leading-relaxed mb-6">{t.desc}</p>
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                Open track →
+              </span>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

@@ -5,6 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PublicSpeaking from "./pages/tracks/PublicSpeaking.tsx";
+import Impromptu from "./pages/tracks/Impromptu.tsx";
+import Interviews from "./pages/tracks/Interviews.tsx";
+import BodyLanguage from "./pages/tracks/BodyLanguage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +20,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/tracks/public-speaking" element={<PublicSpeaking />} />
+          <Route path="/tracks/impromptu" element={<Impromptu />} />
+          <Route path="/tracks/interviews" element={<Interviews />} />
+          <Route path="/tracks/body-language" element={<BodyLanguage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
