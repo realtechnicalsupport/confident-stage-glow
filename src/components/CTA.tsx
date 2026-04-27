@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Mic } from "lucide-react";
 
@@ -11,24 +12,24 @@ export const CTA = () => {
             Your next room is waiting. <em className="text-primary not-italic">Be ready.</em>
           </h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto text-pretty">
-            Start with today's prompt. Sixty seconds. No notes, no judgment, no excuses.
+            Pick a track and start now. Sixty seconds is enough. Free, no account, audio stays on your device.
           </p>
           <Button variant="hero" size="xl" asChild>
-            <a href="#practice">
-              Start today's session
+            <Link to="/tracks/impromptu">
+              Start with today's prompt
               <ArrowRight className="h-5 w-5" />
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
 
       <footer className="container border-t border-border py-10 flex flex-col md:flex-row items-center justify-between gap-4">
-        <a href="#" className="flex items-center gap-2 font-display text-lg font-semibold">
+        <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
           <span className="grid place-items-center h-8 w-8 rounded-full bg-warm text-primary-foreground">
             <Mic className="h-3.5 w-3.5" />
           </span>
           Speak<em className="not-italic text-primary">Bold</em>
-        </a>
+        </Link>
         <p className="text-sm text-muted-foreground">
           © {new Date().getFullYear()} SpeakBold. Practice out loud.
         </p>
