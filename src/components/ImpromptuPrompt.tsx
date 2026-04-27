@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shuffle, Clock } from "lucide-react";
 
@@ -31,13 +31,13 @@ export const ImpromptuPrompt = () => {
     setSeconds(60);
   };
 
-  // Simple countdown
-  useState(() => {
+  useEffect(() => {
+    if (seconds === null) return;
     const id = setInterval(() => {
       setSeconds((s) => (s === null || s <= 0 ? s : s - 1));
     }, 1000);
     return () => clearInterval(id);
-  });
+  }, [seconds === null]);
 
   return (
     <section id="practice" className="container py-24 md:py-32">
