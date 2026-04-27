@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-speaker.jpg";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Mic } from "lucide-react";
@@ -21,19 +22,21 @@ export const Hero = () => {
       {/* Top nav */}
       <header className="absolute top-0 inset-x-0 z-20">
         <div className="container flex items-center justify-between py-6">
-          <a href="#" className="flex items-center gap-2 font-display text-xl font-semibold">
+          <Link to="/" className="flex items-center gap-2 font-display text-xl font-semibold">
             <span className="grid place-items-center h-9 w-9 rounded-full bg-warm text-primary-foreground">
               <Mic className="h-4 w-4" />
             </span>
             Speak<em className="not-italic text-primary">Bold</em>
-          </a>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <a href="#practice" className="hover:text-foreground transition-colors">Practice</a>
-            <a href="#tracks" className="hover:text-foreground transition-colors">Tracks</a>
-            <a href="#techniques" className="hover:text-foreground transition-colors">Techniques</a>
-            <a href="#progress" className="hover:text-foreground transition-colors">Progress</a>
+          </Link>
+          <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
+            <Link to="/tracks/public-speaking" className="hover:text-foreground transition-colors">Public Speaking</Link>
+            <Link to="/tracks/impromptu" className="hover:text-foreground transition-colors">Impromptu</Link>
+            <Link to="/tracks/interviews" className="hover:text-foreground transition-colors">Interviews</Link>
+            <Link to="/tracks/body-language" className="hover:text-foreground transition-colors">Body Language</Link>
           </nav>
-          <Button variant="spotlight" size="sm">Start free</Button>
+          <Button variant="spotlight" size="sm" asChild>
+            <Link to="/tracks/impromptu">Practice now</Link>
+          </Button>
         </div>
       </header>
 
@@ -42,33 +45,33 @@ export const Hero = () => {
         <div className="max-w-3xl animate-fade-up">
           <div className="flex items-center gap-3 text-primary text-xs font-semibold tracking-[0.25em] uppercase mb-8">
             <span className="h-px w-10 bg-primary" />
-            Speak with presence
+            Speak with presence — free, no sign-up
           </div>
           <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-semibold leading-[0.95] tracking-tight text-balance mb-8">
             The room <em className="text-primary not-italic">leans in</em> when you speak.
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl text-pretty mb-10 leading-relaxed">
-            A daily practice for public speaking, impromptu thinking, job interviews,
-            and the body language that makes people listen.
+            Real lessons, prompts, drills, and a built-in recorder for public speaking,
+            impromptu thinking, job interviews, and the body language that makes people listen.
           </p>
           <div className="flex flex-wrap gap-4">
             <Button variant="hero" size="xl" asChild>
-              <a href="#practice">
-                Start today's session
+              <Link to="/tracks/impromptu">
+                Try the 60-second drill
                 <ArrowRight className="h-5 w-5" />
-              </a>
+              </Link>
             </Button>
             <Button variant="outline" size="xl" asChild>
-              <a href="#tracks">Browse tracks</a>
+              <a href="#tracks">Browse the four tracks</a>
             </Button>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-10 gap-y-4 mt-16 text-sm text-muted-foreground">
             <div><span className="font-display text-2xl text-foreground font-semibold">5 min</span><br/>daily practice</div>
             <div className="h-10 w-px bg-border hidden sm:block" />
-            <div><span className="font-display text-2xl text-foreground font-semibold">120+</span><br/>impromptu prompts</div>
+            <div><span className="font-display text-2xl text-foreground font-semibold">24</span><br/>impromptu prompts</div>
             <div className="h-10 w-px bg-border hidden sm:block" />
-            <div><span className="font-display text-2xl text-foreground font-semibold">4 tracks</span><br/>built by coaches</div>
+            <div><span className="font-display text-2xl text-foreground font-semibold">Free</span><br/>no account needed</div>
           </div>
         </div>
       </div>
