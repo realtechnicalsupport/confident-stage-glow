@@ -568,6 +568,38 @@ const Impromptu = () => {
             </div>
           )}
 
+          {revealed && (
+            <div className="border border-border rounded-2xl p-6 md:p-8 bg-card-gradient animate-fade-in">
+              <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold">
+                    Example speech
+                  </span>
+                </div>
+                {suggestedFramework && (
+                  <span className="text-xs text-muted-foreground font-mono">
+                    using {suggestedFramework.name}
+                  </span>
+                )}
+              </div>
+              <ol className="space-y-5">
+                {prompt.example.map((beat, i) => (
+                  <li key={i} className="grid md:grid-cols-[140px_1fr] gap-2 md:gap-6">
+                    <span className="text-xs uppercase tracking-widest text-primary font-semibold pt-1">
+                      {beat.label}
+                    </span>
+                    <p className="text-base leading-relaxed text-foreground/90 italic">
+                      "{beat.text}"
+                    </p>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
+                Don't memorise this — use it to feel how the framework holds the speech together, then say yours in your own voice.
+              </p>
+            </div>
+          )}
+
           <RecorderPanel
             label="Optional: record your attempt"
             hint="Listen back to one in five attempts. You'll spot fillers, pace dips, and habits you can fix fast."
