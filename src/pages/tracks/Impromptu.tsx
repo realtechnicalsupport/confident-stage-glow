@@ -1,19 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TrackShell } from "@/components/TrackShell";
 import { RecorderPanel } from "@/components/RecorderPanel";
 import { Button } from "@/components/ui/button";
 import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff } from "lucide-react";
+import { PromptAuthor, type CustomPrompt, type Difficulty, type Prompt } from "@/components/PromptAuthor";
 
-type Difficulty = "Easy" | "Medium" | "Hard";
-
-type ExampleBeat = { label: string; text: string };
-
-type Prompt = {
-  text: string;
-  framework: string; // must match a FRAMEWORKS name
-  points: string[];
-  example: ExampleBeat[];
-};
+const STORAGE_KEY = "impromptu-custom-prompts-v1";
 
 const FRAMEWORKS = [
   {
@@ -417,6 +409,29 @@ const PROMPTS: Record<Difficulty, Prompt[]> = {
 
 const Impromptu = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
+  const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as CustomPrompt[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(customPrompts));
+  }, [customPrompts]);
+
+  const pool = useMemo<Record<Difficulty, Prompt[]>>(() => {
+    const merged: Record<Difficulty, Prompt[]> = {
+      Easy: [...PROMPTS.Easy],
+      Medium: [...PROMPTS.Medium],
+      Hard: [...PROMPTS.Hard],
+    };
+    customPrompts.forEach((p) => merged[p.difficulty].push(p));
+    return merged;
+  }, [customPrompts]);
+
   const [prompt, setPrompt] = useState<Prompt>(PROMPTS.Medium[0]);
   const [seconds, setSeconds] = useState(60);
   const [running, setRunning] = useState(false);
@@ -424,9 +439,14 @@ const Impromptu = () => {
   const idRef = useRef<number | null>(null);
 
   const shuffle = (d: Difficulty = difficulty) => {
-    const list = PROMPTS[d];
+    const list = pool[d];
+    if (list.length === 0) return;
     let next = prompt;
-    while (next.text === prompt.text) next = list[Math.floor(Math.random() * list.length)];
+    let guard = 0;
+    while (next.text === prompt.text && guard < 10) {
+      next = list[Math.floor(Math.random() * list.length)];
+      guard++;
+    }
     setPrompt(next);
     setSeconds(60);
     setRunning(false);
@@ -599,6 +619,14 @@ const Impromptu = () => {
               </p>
             </div>
           )}
+
+          <PromptAuthor
+            frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
+            customPrompts={customPrompts}
+            onAdd={(p) => setCustomPrompts((prev) => [...prev, p])}
+            onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
+            onReplaceAll={(ps) => setCustomPrompts(ps)}
+          />
 
           <RecorderPanel
             label="Optional: record your attempt"
