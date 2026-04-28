@@ -1,4 +1,6 @@
 import { Hero } from "@/components/Hero";
+import { DailyChallenge } from "@/components/DailyChallenge";
+import { PickYourGoal } from "@/components/PickYourGoal";
 import { Tracks } from "@/components/Tracks";
 import { Techniques } from "@/components/Techniques";
 import { Progress } from "@/components/Progress";
@@ -9,6 +11,8 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <h1 className="sr-only">SpeakBold — Build speaking confidence for public speaking, interviews, and impromptu moments</h1>
       <Hero />
+      <DailyChallenge />
+      <PickYourGoal />
       <Tracks />
       <Techniques />
       <Progress />
