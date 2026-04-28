@@ -1,19 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TrackShell } from "@/components/TrackShell";
 import { RecorderPanel } from "@/components/RecorderPanel";
 import { Button } from "@/components/ui/button";
 import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff } from "lucide-react";
+import { PromptAuthor, type CustomPrompt, type Difficulty, type Prompt } from "@/components/PromptAuthor";
 
-type Difficulty = "Easy" | "Medium" | "Hard";
-
-type ExampleBeat = { label: string; text: string };
-
-type Prompt = {
-  text: string;
-  framework: string; // must match a FRAMEWORKS name
-  points: string[];
-  example: ExampleBeat[];
-};
+const STORAGE_KEY = "impromptu-custom-prompts-v1";
 
 const FRAMEWORKS = [
   {
