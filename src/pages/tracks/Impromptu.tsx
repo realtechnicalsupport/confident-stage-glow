@@ -409,6 +409,29 @@ const PROMPTS: Record<Difficulty, Prompt[]> = {
 
 const Impromptu = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
+  const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as CustomPrompt[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(customPrompts));
+  }, [customPrompts]);
+
+  const pool = useMemo<Record<Difficulty, Prompt[]>>(() => {
+    const merged: Record<Difficulty, Prompt[]> = {
+      Easy: [...PROMPTS.Easy],
+      Medium: [...PROMPTS.Medium],
+      Hard: [...PROMPTS.Hard],
+    };
+    customPrompts.forEach((p) => merged[p.difficulty].push(p));
+    return merged;
+  }, [customPrompts]);
+
   const [prompt, setPrompt] = useState<Prompt>(PROMPTS.Medium[0]);
   const [seconds, setSeconds] = useState(60);
   const [running, setRunning] = useState(false);
@@ -416,9 +439,14 @@ const Impromptu = () => {
   const idRef = useRef<number | null>(null);
 
   const shuffle = (d: Difficulty = difficulty) => {
-    const list = PROMPTS[d];
+    const list = pool[d];
+    if (list.length === 0) return;
     let next = prompt;
-    while (next.text === prompt.text) next = list[Math.floor(Math.random() * list.length)];
+    let guard = 0;
+    while (next.text === prompt.text && guard < 10) {
+      next = list[Math.floor(Math.random() * list.length)];
+      guard++;
+    }
     setPrompt(next);
     setSeconds(60);
     setRunning(false);
