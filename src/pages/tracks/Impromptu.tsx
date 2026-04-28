@@ -6,10 +6,13 @@ import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff } from "lucide-react
 
 type Difficulty = "Easy" | "Medium" | "Hard";
 
+type ExampleBeat = { label: string; text: string };
+
 type Prompt = {
   text: string;
   framework: string; // must match a FRAMEWORKS name
   points: string[];
+  example: ExampleBeat[];
 };
 
 const FRAMEWORKS = [
