@@ -620,6 +620,14 @@ const Impromptu = () => {
             </div>
           )}
 
+          <PromptAuthor
+            frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
+            customPrompts={customPrompts}
+            onAdd={(p) => setCustomPrompts((prev) => [...prev, p])}
+            onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
+            onReplaceAll={(ps) => setCustomPrompts(ps)}
+          />
+
           <RecorderPanel
             label="Optional: record your attempt"
             hint="Listen back to one in five attempts. You'll spot fillers, pace dips, and habits you can fix fast."
