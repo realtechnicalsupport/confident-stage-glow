@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Mic, Square, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRecorder } from "@/hooks/useRecorder";
@@ -14,14 +15,31 @@ interface RecorderPanelProps {
   label?: string;
   hint?: string;
   targetSeconds?: number;
+  /** When provided, recording auto-starts on true and auto-stops on false. Hides manual buttons. */
+  externalRunning?: boolean;
 }
 
 export const RecorderPanel = ({
   label = "Practice recording",
   hint = "Hit record, speak out loud, then play it back. Audio stays on your device.",
   targetSeconds,
+  externalRunning,
 }: RecorderPanelProps) => {
   const { state, recording, elapsedMs, error, start, stop, reset } = useRecorder();
+  const externallyControlled = externalRunning !== undefined;
+  const prevExternalRef = useRef<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    if (!externallyControlled) return;
+    const prev = prevExternalRef.current;
+    if (externalRunning && !prev) {
+      start();
+    } else if (!externalRunning && prev) {
+      stop();
+    }
+    prevExternalRef.current = externalRunning;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalRunning, externallyControlled]);
 
   const isRecording = state === "recording";
   const reachedTarget = targetSeconds ? elapsedMs >= targetSeconds * 1000 : false;
@@ -45,25 +63,40 @@ export const RecorderPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        {!isRecording ? (
-          <Button variant="hero" size="lg" onClick={start}>
-            <Mic className="h-4 w-4" />
-            {recording ? "Record again" : "Start recording"}
-          </Button>
-        ) : (
-          <Button variant="hero" size="lg" onClick={stop} className="animate-pulse-glow">
-            <Square className="h-4 w-4" />
-            Stop
-          </Button>
-        )}
-        {recording && !isRecording && (
-          <Button variant="outline" size="lg" onClick={reset}>
-            <RotateCcw className="h-4 w-4" />
-            Clear
-          </Button>
-        )}
-      </div>
+      {externallyControlled ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isRecording ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+              Recording — synced with timer
+            </>
+          ) : recording ? (
+            <span>Recording captured. Play it back below.</span>
+          ) : (
+            <span>Recording will start automatically when you hit the timer.</span>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          {!isRecording ? (
+            <Button variant="hero" size="lg" onClick={start}>
+              <Mic className="h-4 w-4" />
+              {recording ? "Record again" : "Start recording"}
+            </Button>
+          ) : (
+            <Button variant="hero" size="lg" onClick={stop} className="animate-pulse-glow">
+              <Square className="h-4 w-4" />
+              Stop
+            </Button>
+          )}
+          {recording && !isRecording && (
+            <Button variant="outline" size="lg" onClick={reset}>
+              <RotateCcw className="h-4 w-4" />
+              Clear
+            </Button>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="mt-5 flex items-start gap-2 text-sm text-destructive">
