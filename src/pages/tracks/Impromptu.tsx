@@ -434,6 +434,7 @@ const Impromptu = () => {
   }, [customPrompts]);
 
   const [prompt, setPrompt] = useState<Prompt>(PROMPTS.Medium[0]);
+  const [duration, setDuration] = useState(60);
   const [seconds, setSeconds] = useState(60);
   const [running, setRunning] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -450,7 +451,7 @@ const Impromptu = () => {
       guard++;
     }
     setPrompt(next);
-    setSeconds(60);
+    setSeconds(duration);
     setRunning(false);
     setRevealed(false);
   };
@@ -474,7 +475,15 @@ const Impromptu = () => {
     };
   }, [running]);
 
-  const pct = (seconds / 60) * 100;
+  // Keep displayed seconds in sync if duration changes while idle
+  useEffect(() => {
+    if (!running && seconds !== 0) setSeconds(duration);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration]);
+
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  const pct = duration > 0 ? (seconds / duration) * 100 : 0;
   const suggestedFramework = FRAMEWORKS.find((f) => f.name === prompt.framework);
 
   return (
