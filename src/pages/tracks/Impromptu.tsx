@@ -5,8 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff, Mic, MicOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PromptAuthor, type CustomPrompt, type Difficulty, type Prompt } from "@/components/PromptAuthor";
+import { PromptLibrary, type LibraryEntry } from "@/components/PromptLibrary";
 
 const STORAGE_KEY = "impromptu-custom-prompts-v1";
+const OVERRIDES_KEY = "impromptu-builtin-overrides-v1";
+const DISABLED_KEY = "impromptu-disabled-ids-v1";
+
+// Stable ID for built-in prompts (index in the original PROMPTS array per difficulty)
+const builtinId = (d: Difficulty, i: number) => `builtin:${d}:${i}`;
+
+type BuiltinOverride = { difficulty: Difficulty; prompt: Prompt };
 
 const FRAMEWORKS = [
   {
