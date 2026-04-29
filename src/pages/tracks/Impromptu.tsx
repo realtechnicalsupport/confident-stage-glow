@@ -759,6 +759,57 @@ const Impromptu = () => {
             </div>
           )}
 
+          <PromptLibrary
+            frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
+            entries={entries}
+            onToggle={(id, enabled) =>
+              setDisabledIds((prev) => {
+                const next = new Set(prev);
+                if (enabled) next.delete(id);
+                else next.add(id);
+                return next;
+              })
+            }
+            onEdit={(id, next) => {
+              if (id.startsWith("builtin:")) {
+                setOverrides((prev) => ({ ...prev, [id]: next }));
+              } else {
+                setCustomPrompts((prev) =>
+                  prev.map((p) =>
+                    p.id === id
+                      ? {
+                          ...p,
+                          difficulty: next.difficulty,
+                          text: next.prompt.text,
+                          framework: next.prompt.framework,
+                          points: next.prompt.points,
+                          example: next.prompt.example,
+                        }
+                      : p
+                  )
+                );
+              }
+            }}
+            onResetBuiltin={(id) =>
+              setOverrides((prev) => {
+                const { [id]: _drop, ...rest } = prev;
+                return rest;
+              })
+            }
+            onDeleteCustom={(id) => {
+              setCustomPrompts((prev) => prev.filter((p) => p.id !== id));
+              setDisabledIds((prev) => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+              });
+            }}
+            onResetAll={() => {
+              setOverrides({});
+              setDisabledIds(new Set());
+            }}
+          />
+
           <PromptAuthor
             frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
             customPrompts={customPrompts}
