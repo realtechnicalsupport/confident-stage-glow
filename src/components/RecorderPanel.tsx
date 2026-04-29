@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Mic, Square, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRecorder } from "@/hooks/useRecorder";
@@ -14,14 +15,31 @@ interface RecorderPanelProps {
   label?: string;
   hint?: string;
   targetSeconds?: number;
+  /** When provided, recording auto-starts on true and auto-stops on false. Hides manual buttons. */
+  externalRunning?: boolean;
 }
 
 export const RecorderPanel = ({
   label = "Practice recording",
   hint = "Hit record, speak out loud, then play it back. Audio stays on your device.",
   targetSeconds,
+  externalRunning,
 }: RecorderPanelProps) => {
   const { state, recording, elapsedMs, error, start, stop, reset } = useRecorder();
+  const externallyControlled = externalRunning !== undefined;
+  const prevExternalRef = useRef<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    if (!externallyControlled) return;
+    const prev = prevExternalRef.current;
+    if (externalRunning && !prev) {
+      start();
+    } else if (!externalRunning && prev) {
+      stop();
+    }
+    prevExternalRef.current = externalRunning;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalRunning, externallyControlled]);
 
   const isRecording = state === "recording";
   const reachedTarget = targetSeconds ? elapsedMs >= targetSeconds * 1000 : false;
