@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { TrackShell } from "@/components/TrackShell";
 import { RecorderPanel } from "@/components/RecorderPanel";
 import { Button } from "@/components/ui/button";
-import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff } from "lucide-react";
+import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff, Mic, MicOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { PromptAuthor, type CustomPrompt, type Difficulty, type Prompt } from "@/components/PromptAuthor";
 
 const STORAGE_KEY = "impromptu-custom-prompts-v1";
@@ -436,6 +437,7 @@ const Impromptu = () => {
   const [seconds, setSeconds] = useState(60);
   const [running, setRunning] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [recordEnabled, setRecordEnabled] = useState(false);
   const idRef = useRef<number | null>(null);
 
   const shuffle = (d: Difficulty = difficulty) => {
@@ -552,6 +554,33 @@ const Impromptu = () => {
             {seconds === 0 && (
               <p className="mt-6 text-primary font-semibold animate-fade-in">Time. Take a breath. Try a fresh prompt.</p>
             )}
+
+            <div className="mt-8 pt-6 border-t border-border flex items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                {recordEnabled ? (
+                  <Mic className="h-5 w-5 text-primary mt-0.5" />
+                ) : (
+                  <MicOff className="h-5 w-5 text-muted-foreground mt-0.5" />
+                )}
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Record this attempt</p>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Optional. Audio stays on your device — listen back to spot fillers and pace dips.
+                  </p>
+                </div>
+              </div>
+              <Switch checked={recordEnabled} onCheckedChange={setRecordEnabled} aria-label="Toggle recording" />
+            </div>
+
+            {recordEnabled && (
+              <div className="mt-6 animate-fade-in">
+                <RecorderPanel
+                  label="Recording your attempt"
+                  hint="Hit record before you start the timer. Play it back when the 60s ends."
+                  targetSeconds={60}
+                />
+              </div>
+            )}
           </div>
 
           {revealed && (
@@ -626,12 +655,6 @@ const Impromptu = () => {
             onAdd={(p) => setCustomPrompts((prev) => [...prev, p])}
             onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
             onReplaceAll={(ps) => setCustomPrompts(ps)}
-          />
-
-          <RecorderPanel
-            label="Optional: record your attempt"
-            hint="Listen back to one in five attempts. You'll spot fillers, pace dips, and habits you can fix fast."
-            targetSeconds={60}
           />
         </div>
 
