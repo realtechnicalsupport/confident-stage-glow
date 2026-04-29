@@ -554,6 +554,33 @@ const Impromptu = () => {
             {seconds === 0 && (
               <p className="mt-6 text-primary font-semibold animate-fade-in">Time. Take a breath. Try a fresh prompt.</p>
             )}
+
+            <div className="mt-8 pt-6 border-t border-border flex items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                {recordEnabled ? (
+                  <Mic className="h-5 w-5 text-primary mt-0.5" />
+                ) : (
+                  <MicOff className="h-5 w-5 text-muted-foreground mt-0.5" />
+                )}
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Record this attempt</p>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Optional. Audio stays on your device — listen back to spot fillers and pace dips.
+                  </p>
+                </div>
+              </div>
+              <Switch checked={recordEnabled} onCheckedChange={setRecordEnabled} aria-label="Toggle recording" />
+            </div>
+
+            {recordEnabled && (
+              <div className="mt-6 animate-fade-in">
+                <RecorderPanel
+                  label="Recording your attempt"
+                  hint="Hit record before you start the timer. Play it back when the 60s ends."
+                  targetSeconds={60}
+                />
+              </div>
+            )}
           </div>
 
           {revealed && (
