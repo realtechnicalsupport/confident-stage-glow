@@ -437,6 +437,7 @@ const Impromptu = () => {
   const [seconds, setSeconds] = useState(60);
   const [running, setRunning] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [recordEnabled, setRecordEnabled] = useState(false);
   const idRef = useRef<number | null>(null);
 
   const shuffle = (d: Difficulty = difficulty) => {
