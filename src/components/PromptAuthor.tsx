@@ -77,14 +77,63 @@ export const PromptAuthor = ({ frameworks, customPrompts, onAdd, onDelete, onRep
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result));
-        if (!Array.isArray(parsed)) throw new Error("Expected an array");
-        onReplaceAll(parsed);
-        toast({ title: `Imported ${parsed.length} prompts` });
+        const raw = JSON.parse(String(reader.result));
+        const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.prompts) ? raw.prompts : null;
+        if (!arr) throw new Error("JSON must be an array of prompts (or { prompts: [...] }).");
+
+        const allowed: Difficulty[] = ["Easy", "Medium", "Hard"];
+        const errors: string[] = [];
+        const cleaned: CustomPrompt[] = [];
+
+        arr.forEach((p: any, i: number) => {
+          const where = `#${i + 1}`;
+          if (!p || typeof p !== "object") return errors.push(`${where}: not an object`);
+          if (typeof p.text !== "string" || !p.text.trim()) return errors.push(`${where}: missing "text"`);
+          const difficulty: Difficulty = allowed.includes(p.difficulty) ? p.difficulty : "Medium";
+          const framework = typeof p.framework === "string" && p.framework.trim()
+            ? p.framework
+            : frameworks[0]?.name ?? "PREP";
+          const points = Array.isArray(p.points)
+            ? p.points.map((x: any) => String(x ?? "").trim()).filter(Boolean)
+            : [];
+          if (points.length < 2) return errors.push(`${where}: need at least 2 "points"`);
+          const example = Array.isArray(p.example)
+            ? p.example
+                .map((b: any) => ({
+                  label: String(b?.label ?? "").trim(),
+                  text: String(b?.text ?? "").trim(),
+                }))
+                .filter((b: ExampleBeat) => b.label && b.text)
+            : [];
+          if (example.length < 2) return errors.push(`${where}: need at least 2 "example" beats with label+text`);
+
+          cleaned.push({
+            id: typeof p.id === "string" && p.id ? p.id : crypto.randomUUID(),
+            difficulty,
+            text: p.text.trim(),
+            framework,
+            points,
+            example,
+          });
+        });
+
+        if (cleaned.length === 0) {
+          throw new Error(errors[0] ?? "No valid prompts found in file.");
+        }
+
+        onReplaceAll(cleaned);
+        toast({
+          title: `Imported ${cleaned.length} prompt${cleaned.length === 1 ? "" : "s"}`,
+          description: errors.length
+            ? `${errors.length} skipped. First: ${errors[0]}`
+            : "Replaced your custom prompt list.",
+        });
       } catch (e: any) {
-        toast({ title: "Import failed", description: e.message });
+        console.error("[PromptAuthor] import failed:", e);
+        toast({ title: "Import failed", description: e?.message ?? "Invalid JSON" });
       }
     };
+    reader.onerror = () => toast({ title: "Could not read file" });
     reader.readAsText(file);
   };
 
