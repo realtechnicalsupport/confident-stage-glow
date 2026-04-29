@@ -656,12 +656,6 @@ const Impromptu = () => {
             onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
             onReplaceAll={(ps) => setCustomPrompts(ps)}
           />
-
-          <RecorderPanel
-            label="Optional: record your attempt"
-            hint="Listen back to one in five attempts. You'll spot fillers, pace dips, and habits you can fix fast."
-            targetSeconds={60}
-          />
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 self-start">
