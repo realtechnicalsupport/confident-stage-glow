@@ -525,17 +525,58 @@ const Impromptu = () => {
             <div className="flex items-center justify-between mb-8">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">{difficulty} prompt</span>
               <span className="font-mono tabular-nums text-2xl">
-                0:{String(seconds).padStart(2, "0")}
+                {mins}:{String(secs).padStart(2, "0")}
               </span>
             </div>
             <p className="font-display text-3xl md:text-5xl leading-tight text-pretty mb-10 min-h-[8rem]">
               "{prompt.text}"
             </p>
+
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="text-xs uppercase tracking-widest text-muted-foreground mr-1">Timer</span>
+              {[30, 60, 90, 120].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => { setDuration(d); setSeconds(d); setRunning(false); }}
+                  className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
+                    duration === d
+                      ? "bg-foreground text-background border-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {d < 60 ? `${d}s` : `${d / 60}m`}
+                </button>
+              ))}
+              <div className="flex items-center gap-1 ml-1">
+                <input
+                  type="number"
+                  min={5}
+                  max={600}
+                  value={duration}
+                  onChange={(e) => {
+                    const v = Math.max(5, Math.min(600, Number(e.target.value) || 0));
+                    setDuration(v);
+                    if (!running) setSeconds(v);
+                  }}
+                  className="w-16 h-8 px-2 rounded-md bg-background border border-border text-sm font-mono tabular-nums focus:outline-none focus:border-primary"
+                  aria-label="Custom duration in seconds"
+                />
+                <span className="text-xs text-muted-foreground">sec</span>
+              </div>
+            </div>
+
             <div className="flex flex-wrap gap-3">
               {!running ? (
-                <Button variant="hero" size="lg" onClick={() => setRunning(true)} disabled={seconds === 0}>
+                <Button
+                  variant="hero"
+                  size="lg"
+                  onClick={() => {
+                    if (seconds === 0) setSeconds(duration);
+                    setRunning(true);
+                  }}
+                >
                   <Play className="h-4 w-4" />
-                  Start 60s
+                  Start {duration < 60 ? `${duration}s` : `${duration}s`}
                 </Button>
               ) : (
                 <Button variant="hero" size="lg" onClick={() => setRunning(false)}>
@@ -543,7 +584,7 @@ const Impromptu = () => {
                   Pause
                 </Button>
               )}
-              <Button variant="outline" size="lg" onClick={() => { setSeconds(60); setRunning(false); }}>
+              <Button variant="outline" size="lg" onClick={() => { setSeconds(duration); setRunning(false); }}>
                 <RotateCcw className="h-4 w-4" />
                 Reset
               </Button>
@@ -574,7 +615,7 @@ const Impromptu = () => {
                 <div>
                   <p className="text-sm font-semibold text-foreground">Record this attempt</p>
                   <p className="text-xs text-muted-foreground max-w-sm">
-                    Optional. Audio stays on your device — listen back to spot fillers and pace dips.
+                    Auto-starts and stops with the timer. Audio stays on your device.
                   </p>
                 </div>
               </div>
@@ -585,8 +626,9 @@ const Impromptu = () => {
               <div className="mt-6 animate-fade-in">
                 <RecorderPanel
                   label="Recording your attempt"
-                  hint="Hit record before you start the timer. Play it back when the 60s ends."
-                  targetSeconds={60}
+                  hint="Mic activates the moment you hit Start, and saves automatically when the timer ends."
+                  targetSeconds={duration}
+                  externalRunning={running}
                 />
               </div>
             )}
