@@ -63,25 +63,40 @@ export const RecorderPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        {!isRecording ? (
-          <Button variant="hero" size="lg" onClick={start}>
-            <Mic className="h-4 w-4" />
-            {recording ? "Record again" : "Start recording"}
-          </Button>
-        ) : (
-          <Button variant="hero" size="lg" onClick={stop} className="animate-pulse-glow">
-            <Square className="h-4 w-4" />
-            Stop
-          </Button>
-        )}
-        {recording && !isRecording && (
-          <Button variant="outline" size="lg" onClick={reset}>
-            <RotateCcw className="h-4 w-4" />
-            Clear
-          </Button>
-        )}
-      </div>
+      {externallyControlled ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isRecording ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+              Recording — synced with timer
+            </>
+          ) : recording ? (
+            <span>Recording captured. Play it back below.</span>
+          ) : (
+            <span>Recording will start automatically when you hit the timer.</span>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          {!isRecording ? (
+            <Button variant="hero" size="lg" onClick={start}>
+              <Mic className="h-4 w-4" />
+              {recording ? "Record again" : "Start recording"}
+            </Button>
+          ) : (
+            <Button variant="hero" size="lg" onClick={stop} className="animate-pulse-glow">
+              <Square className="h-4 w-4" />
+              Stop
+            </Button>
+          )}
+          {recording && !isRecording && (
+            <Button variant="outline" size="lg" onClick={reset}>
+              <RotateCcw className="h-4 w-4" />
+              Clear
+            </Button>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="mt-5 flex items-start gap-2 text-sm text-destructive">
