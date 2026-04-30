@@ -34,9 +34,14 @@ export const Hero = () => {
             <Link to="/tracks/interviews" className="hover:text-foreground transition-colors">Interviews</Link>
             <Link to="/tracks/body-language" className="hover:text-foreground transition-colors">Body Language</Link>
           </nav>
-          <Button variant="spotlight" size="sm" asChild>
-            <Link to="/tracks/impromptu">Practice now</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/login">Login / Signup</Link>
+            </Button>
+            <Button variant="spotlight" size="sm" asChild>
+              <Link to="/tracks/impromptu">Practice now</Link>
+            </Button>
+          </div>
         </div>
       </header>
 
