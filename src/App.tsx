@@ -10,8 +10,6 @@ import Impromptu from "./pages/tracks/Impromptu.tsx";
 import Interviews from "./pages/tracks/Interviews.tsx";
 import BodyLanguage from "./pages/tracks/BodyLanguage.tsx";
 import Login from "./pages/Login.tsx";
-// inside <Routes>:
-<Route path="/login" element={<Login />} />
 
 const queryClient = new QueryClient();
 
@@ -27,6 +25,7 @@ const App = () => (
           <Route path="/tracks/impromptu" element={<Impromptu />} />
           <Route path="/tracks/interviews" element={<Interviews />} />
           <Route path="/tracks/body-language" element={<BodyLanguage />} />
+          <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
