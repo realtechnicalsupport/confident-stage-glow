@@ -10,11 +10,13 @@ import Impromptu from "./pages/tracks/Impromptu.tsx";
 import Interviews from "./pages/tracks/Interviews.tsx";
 import BodyLanguage from "./pages/tracks/BodyLanguage.tsx";
 import Login from "./pages/Login.tsx";
+import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <AuthProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -31,6 +33,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
