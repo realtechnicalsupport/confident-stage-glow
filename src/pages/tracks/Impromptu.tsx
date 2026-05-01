@@ -417,40 +417,21 @@ const PROMPTS: Record<Difficulty, Prompt[]> = {
 
 const Impromptu = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
-  const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as CustomPrompt[]) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [overrides, setOverrides] = useState<Record<string, BuiltinOverride>>(() => {
-    try {
-      const raw = localStorage.getItem(OVERRIDES_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
-    }
-  });
-  const [disabledIds, setDisabledIds] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(DISABLED_KEY);
-      return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(customPrompts));
-  }, [customPrompts]);
-  useEffect(() => {
-    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
-  }, [overrides]);
-  useEffect(() => {
-    localStorage.setItem(DISABLED_KEY, JSON.stringify(Array.from(disabledIds)));
-  }, [disabledIds]);
+  const { user } = useAuth();
+  const {
+    customPrompts,
+    overrides,
+    disabledIds,
+    upsertCustomPrompt,
+    deleteCustomPrompt,
+    replaceAllCustomPrompts,
+    setOverride,
+    clearOverride,
+    setDisabled,
+    resetAll,
+  } = useSyncedPrompts();
+  const { upload: uploadRecording } = useRecordings();
+  const { markPracticed } = useSyncedStreak();
 
   // All prompts as library entries (built-ins + custom), with overrides + enabled state applied
   const entries = useMemo<LibraryEntry[]>(() => {
