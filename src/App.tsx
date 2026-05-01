@@ -10,8 +10,6 @@ import Impromptu from "./pages/tracks/Impromptu.tsx";
 import Interviews from "./pages/tracks/Interviews.tsx";
 import BodyLanguage from "./pages/tracks/BodyLanguage.tsx";
 import Login from "./pages/Login.tsx";
-// inside <Routes>:
-<Route path="/login" element={<Login />} />
 
 const queryClient = new QueryClient();
 
