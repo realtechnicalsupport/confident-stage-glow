@@ -35,7 +35,7 @@ export const Hero = () => {
             <Link to="/tracks/body-language" className="hover:text-foreground transition-colors">Body Language</Link>
           </nav>
           <Button variant="spotlight" size="sm" asChild>
-            <Link to="/tracks/impromptu">Practice now</Link>
+            <Link to="/login">Log in / Sign up</Link>
           </Button>
         </div>
       </header>
@@ -56,7 +56,7 @@ export const Hero = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <Button variant="hero" size="xl" asChild>
-              <Link to="/tracks/impromptu">
+              <Link to="/login">
                 Try the 60-second drill
                 <ArrowRight className="h-5 w-5" />
               </Link>
