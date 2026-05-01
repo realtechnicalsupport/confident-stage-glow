@@ -17,6 +17,8 @@ interface RecorderPanelProps {
   targetSeconds?: number;
   /** When provided, recording auto-starts on true and auto-stops on false. Hides manual buttons. */
   externalRunning?: boolean;
+  /** Called once when a fresh recording is finalized */
+  onRecorded?: (rec: { blob: Blob; durationMs: number }) => void;
 }
 
 export const RecorderPanel = ({
@@ -24,10 +26,12 @@ export const RecorderPanel = ({
   hint = "Hit record, speak out loud, then play it back. Audio stays on your device.",
   targetSeconds,
   externalRunning,
+  onRecorded,
 }: RecorderPanelProps) => {
   const { state, recording, elapsedMs, error, start, stop, reset } = useRecorder();
   const externallyControlled = externalRunning !== undefined;
   const prevExternalRef = useRef<boolean | undefined>(undefined);
+  const lastReportedRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!externallyControlled) return;
@@ -40,6 +44,13 @@ export const RecorderPanel = ({
     prevExternalRef.current = externalRunning;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalRunning, externallyControlled]);
+
+  useEffect(() => {
+    if (recording && recording.createdAt !== lastReportedRef.current) {
+      lastReportedRef.current = recording.createdAt;
+      onRecorded?.({ blob: recording.blob, durationMs: recording.durationMs });
+    }
+  }, [recording, onRecorded]);
 
   const isRecording = state === "recording";
   const reachedTarget = targetSeconds ? elapsedMs >= targetSeconds * 1000 : false;

@@ -1,7 +1,8 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Mic } from "lucide-react";
+import { Mic, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV = [
   { to: "/tracks/public-speaking", label: "Public Speaking" },
@@ -13,6 +14,7 @@ const NAV = [
 export const SiteHeader = ({ transparent = false }: { transparent?: boolean }) => {
   const { pathname } = useLocation();
   const onHome = pathname === "/";
+  const { user, signOut } = useAuth();
   return (
     <header
       className={cn(
@@ -40,9 +42,23 @@ export const SiteHeader = ({ transparent = false }: { transparent?: boolean }) =
             </NavLink>
           ))}
         </nav>
-        <Button variant={onHome ? "spotlight" : "outline"} size="sm" asChild>
-          <Link to="/tracks/impromptu">Practice now</Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          {user ? (
+            <>
+              <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[160px]">
+                {user.email}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => signOut()}>
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <Button variant={onHome ? "spotlight" : "outline"} size="sm" asChild>
+              <Link to="/login">Log in / Sign up</Link>
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );

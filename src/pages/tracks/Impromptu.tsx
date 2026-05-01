@@ -6,15 +6,14 @@ import { Shuffle, Play, Pause, RotateCcw, Lightbulb, EyeOff, Mic, MicOff } from 
 import { Switch } from "@/components/ui/switch";
 import { PromptAuthor, type CustomPrompt, type Difficulty, type Prompt } from "@/components/PromptAuthor";
 import { PromptLibrary, type LibraryEntry } from "@/components/PromptLibrary";
-
-const STORAGE_KEY = "impromptu-custom-prompts-v1";
-const OVERRIDES_KEY = "impromptu-builtin-overrides-v1";
-const DISABLED_KEY = "impromptu-disabled-ids-v1";
+import { RecordingsList } from "@/components/RecordingsList";
+import { useSyncedPrompts } from "@/hooks/useSyncedPrompts";
+import { useRecordings, useSyncedStreak } from "@/hooks/useRecordings";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 // Stable ID for built-in prompts (index in the original PROMPTS array per difficulty)
 const builtinId = (d: Difficulty, i: number) => `builtin:${d}:${i}`;
-
-type BuiltinOverride = { difficulty: Difficulty; prompt: Prompt };
 
 const FRAMEWORKS = [
   {
@@ -418,40 +417,21 @@ const PROMPTS: Record<Difficulty, Prompt[]> = {
 
 const Impromptu = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
-  const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as CustomPrompt[]) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [overrides, setOverrides] = useState<Record<string, BuiltinOverride>>(() => {
-    try {
-      const raw = localStorage.getItem(OVERRIDES_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
-    }
-  });
-  const [disabledIds, setDisabledIds] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(DISABLED_KEY);
-      return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(customPrompts));
-  }, [customPrompts]);
-  useEffect(() => {
-    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
-  }, [overrides]);
-  useEffect(() => {
-    localStorage.setItem(DISABLED_KEY, JSON.stringify(Array.from(disabledIds)));
-  }, [disabledIds]);
+  const { user } = useAuth();
+  const {
+    customPrompts,
+    overrides,
+    disabledIds,
+    upsertCustomPrompt,
+    deleteCustomPrompt,
+    replaceAllCustomPrompts,
+    setOverride,
+    clearOverride,
+    setDisabled,
+    resetAll,
+  } = useSyncedPrompts();
+  const { upload: uploadRecording } = useRecordings();
+  const { markPracticed } = useSyncedStreak();
 
   // All prompts as library entries (built-ins + custom), with overrides + enabled state applied
   const entries = useMemo<LibraryEntry[]>(() => {
@@ -685,9 +665,35 @@ const Impromptu = () => {
               <div className="mt-6 animate-fade-in">
                 <RecorderPanel
                   label="Recording your attempt"
-                  hint="Mic activates the moment you hit Start, and saves automatically when the timer ends."
+                  hint={
+                    user
+                      ? "Mic activates the moment you hit Start. Saved to your account when the timer ends."
+                      : "Mic activates with the timer. Sign in to sync recordings to your account."
+                  }
                   targetSeconds={duration}
                   externalRunning={running}
+                  onRecorded={async ({ blob, durationMs }) => {
+                    markPracticed();
+                    if (!user) {
+                      toast({
+                        title: "Recording captured",
+                        description: "Sign in to save it to your account.",
+                      });
+                      return;
+                    }
+                    const saved = await uploadRecording(blob, {
+                      promptText: prompt.text,
+                      difficulty,
+                      durationMs,
+                      targetSeconds: duration,
+                    });
+                    toast({
+                      title: saved ? "Recording saved" : "Save failed",
+                      description: saved
+                        ? "Synced to your account."
+                        : "We couldn't upload your recording.",
+                    });
+                  }}
                 />
               </div>
             )}
@@ -762,60 +768,37 @@ const Impromptu = () => {
           <PromptLibrary
             frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
             entries={entries}
-            onToggle={(id, enabled) =>
-              setDisabledIds((prev) => {
-                const next = new Set(prev);
-                if (enabled) next.delete(id);
-                else next.add(id);
-                return next;
-              })
-            }
+            onToggle={(id, enabled) => setDisabled(id, !enabled)}
             onEdit={(id, next) => {
               if (id.startsWith("builtin:")) {
-                setOverrides((prev) => ({ ...prev, [id]: next }));
+                setOverride(id, next);
               } else {
-                setCustomPrompts((prev) =>
-                  prev.map((p) =>
-                    p.id === id
-                      ? {
-                          ...p,
-                          difficulty: next.difficulty,
-                          text: next.prompt.text,
-                          framework: next.prompt.framework,
-                          points: next.prompt.points,
-                          example: next.prompt.example,
-                        }
-                      : p
-                  )
-                );
+                const existing = customPrompts.find((p) => p.id === id);
+                if (existing) {
+                  upsertCustomPrompt({
+                    ...existing,
+                    difficulty: next.difficulty,
+                    text: next.prompt.text,
+                    framework: next.prompt.framework,
+                    points: next.prompt.points,
+                    example: next.prompt.example,
+                  });
+                }
               }
             }}
-            onResetBuiltin={(id) =>
-              setOverrides((prev) => {
-                const { [id]: _drop, ...rest } = prev;
-                return rest;
-              })
-            }
-            onDeleteCustom={(id) => {
-              setCustomPrompts((prev) => prev.filter((p) => p.id !== id));
-              setDisabledIds((prev) => {
-                const next = new Set(prev);
-                next.delete(id);
-                return next;
-              });
-            }}
-            onResetAll={() => {
-              setOverrides({});
-              setDisabledIds(new Set());
-            }}
+            onResetBuiltin={(id) => clearOverride(id)}
+            onDeleteCustom={(id) => deleteCustomPrompt(id)}
+            onResetAll={() => resetAll()}
           />
+
+          <RecordingsList />
 
           <PromptAuthor
             frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
             customPrompts={customPrompts}
-            onAdd={(p) => setCustomPrompts((prev) => [...prev, p])}
-            onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
-            onReplaceAll={(ps) => setCustomPrompts(ps)}
+            onAdd={(p) => upsertCustomPrompt(p)}
+            onDelete={(id) => deleteCustomPrompt(id)}
+            onReplaceAll={(ps) => replaceAllCustomPrompts(ps)}
           />
         </div>
 

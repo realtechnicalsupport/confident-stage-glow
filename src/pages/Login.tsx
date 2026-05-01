@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mic, Eye, EyeOff, ArrowRight, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 type AuthMode = "login" | "signup" | "forgot";
 
@@ -15,14 +19,57 @@ const Login = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (session) navigate("/tracks/impromptu", { replace: true });
+  }, [session, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate auth — replace with real logic
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    navigate("/");
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: { display_name: name },
+          },
+        });
+        if (error) throw error;
+        toast({ title: "Check your email", description: "Confirm your address to finish signing up." });
+      } else if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        navigate("/tracks/impromptu");
+      } else {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        toast({ title: "Reset link sent", description: "Check your inbox." });
+      }
+    } catch (err: any) {
+      toast({ title: "Authentication failed", description: err?.message ?? "Try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      toast({ title: "Google sign-in failed", description: String(result.error) });
+      setLoading(false);
+      return;
+    }
+    if (result.redirected) return;
+    navigate("/tracks/impromptu");
   };
 
   return (
@@ -211,13 +258,13 @@ const Login = () => {
                 <span className="flex-1 h-px bg-border" />
               </div>
 
-              {/* OAuth stub */}
               <Button
                 type="button"
                 variant="outline"
                 size="lg"
                 className="w-full gap-3"
-                onClick={() => {/* TODO: Google OAuth */}}
+                onClick={handleGoogle}
+                disabled={loading}
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
                   <path
