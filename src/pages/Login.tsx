@@ -258,13 +258,13 @@ const Login = () => {
                 <span className="flex-1 h-px bg-border" />
               </div>
 
-              {/* OAuth stub */}
               <Button
                 type="button"
                 variant="outline"
                 size="lg"
                 className="w-full gap-3"
-                onClick={() => {/* TODO: Google OAuth */}}
+                onClick={handleGoogle}
+                disabled={loading}
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
                   <path
