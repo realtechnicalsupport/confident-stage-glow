@@ -25,6 +25,7 @@ const App = () => (
           <Route path="/tracks/impromptu" element={<Impromptu />} />
           <Route path="/tracks/interviews" element={<Interviews />} />
           <Route path="/tracks/body-language" element={<BodyLanguage />} />
+          <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
