@@ -14,7 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      custom_prompts: {
+        Row: {
+          client_id: string
+          created_at: string
+          difficulty: string
+          example: Json
+          framework: string
+          id: string
+          points: Json
+          text: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          difficulty: string
+          example?: Json
+          framework: string
+          id?: string
+          points?: Json
+          text: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          difficulty?: string
+          example?: Json
+          framework?: string
+          id?: string
+          points?: Json
+          text?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      disabled_prompts: {
+        Row: {
+          created_at: string
+          prompt_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          prompt_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          prompt_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      prompt_overrides: {
+        Row: {
+          builtin_id: string
+          difficulty: string
+          prompt: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          builtin_id: string
+          difficulty: string
+          prompt: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          builtin_id?: string
+          difficulty?: string
+          prompt?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recordings: {
+        Row: {
+          created_at: string
+          difficulty: string | null
+          duration_ms: number
+          id: string
+          prompt_text: string | null
+          storage_path: string
+          target_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty?: string | null
+          duration_ms?: number
+          id?: string
+          prompt_text?: string | null
+          storage_path: string
+          target_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          difficulty?: string | null
+          duration_ms?: number
+          id?: string
+          prompt_text?: string | null
+          storage_path?: string
+          target_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streaks: {
+        Row: {
+          count: number
+          last_day: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          last_day?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          last_day?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
