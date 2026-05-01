@@ -742,60 +742,37 @@ const Impromptu = () => {
           <PromptLibrary
             frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
             entries={entries}
-            onToggle={(id, enabled) =>
-              setDisabledIds((prev) => {
-                const next = new Set(prev);
-                if (enabled) next.delete(id);
-                else next.add(id);
-                return next;
-              })
-            }
+            onToggle={(id, enabled) => setDisabled(id, !enabled)}
             onEdit={(id, next) => {
               if (id.startsWith("builtin:")) {
-                setOverrides((prev) => ({ ...prev, [id]: next }));
+                setOverride(id, next);
               } else {
-                setCustomPrompts((prev) =>
-                  prev.map((p) =>
-                    p.id === id
-                      ? {
-                          ...p,
-                          difficulty: next.difficulty,
-                          text: next.prompt.text,
-                          framework: next.prompt.framework,
-                          points: next.prompt.points,
-                          example: next.prompt.example,
-                        }
-                      : p
-                  )
-                );
+                const existing = customPrompts.find((p) => p.id === id);
+                if (existing) {
+                  upsertCustomPrompt({
+                    ...existing,
+                    difficulty: next.difficulty,
+                    text: next.prompt.text,
+                    framework: next.prompt.framework,
+                    points: next.prompt.points,
+                    example: next.prompt.example,
+                  });
+                }
               }
             }}
-            onResetBuiltin={(id) =>
-              setOverrides((prev) => {
-                const { [id]: _drop, ...rest } = prev;
-                return rest;
-              })
-            }
-            onDeleteCustom={(id) => {
-              setCustomPrompts((prev) => prev.filter((p) => p.id !== id));
-              setDisabledIds((prev) => {
-                const next = new Set(prev);
-                next.delete(id);
-                return next;
-              });
-            }}
-            onResetAll={() => {
-              setOverrides({});
-              setDisabledIds(new Set());
-            }}
+            onResetBuiltin={(id) => clearOverride(id)}
+            onDeleteCustom={(id) => deleteCustomPrompt(id)}
+            onResetAll={() => resetAll()}
           />
+
+          <RecordingsList />
 
           <PromptAuthor
             frameworks={FRAMEWORKS.map((f) => ({ name: f.name, expanded: f.expanded }))}
             customPrompts={customPrompts}
-            onAdd={(p) => setCustomPrompts((prev) => [...prev, p])}
-            onDelete={(id) => setCustomPrompts((prev) => prev.filter((p) => p.id !== id))}
-            onReplaceAll={(ps) => setCustomPrompts(ps)}
+            onAdd={(p) => upsertCustomPrompt(p)}
+            onDelete={(id) => deleteCustomPrompt(id)}
+            onReplaceAll={(ps) => replaceAllCustomPrompts(ps)}
           />
         </div>
 
