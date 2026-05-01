@@ -665,9 +665,35 @@ const Impromptu = () => {
               <div className="mt-6 animate-fade-in">
                 <RecorderPanel
                   label="Recording your attempt"
-                  hint="Mic activates the moment you hit Start, and saves automatically when the timer ends."
+                  hint={
+                    user
+                      ? "Mic activates the moment you hit Start. Saved to your account when the timer ends."
+                      : "Mic activates with the timer. Sign in to sync recordings to your account."
+                  }
                   targetSeconds={duration}
                   externalRunning={running}
+                  onRecorded={async ({ blob, durationMs }) => {
+                    markPracticed();
+                    if (!user) {
+                      toast({
+                        title: "Recording captured",
+                        description: "Sign in to save it to your account.",
+                      });
+                      return;
+                    }
+                    const saved = await uploadRecording(blob, {
+                      promptText: prompt.text,
+                      difficulty,
+                      durationMs,
+                      targetSeconds: duration,
+                    });
+                    toast({
+                      title: saved ? "Recording saved" : "Save failed",
+                      description: saved
+                        ? "Synced to your account."
+                        : "We couldn't upload your recording.",
+                    });
+                  }}
                 />
               </div>
             )}
