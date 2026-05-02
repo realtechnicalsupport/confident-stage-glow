@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Mic, LogOut } from "lucide-react";
+import { Mic, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -45,12 +45,15 @@ export const SiteHeader = ({ transparent = false }: { transparent?: boolean }) =
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[160px]">
-                {user.email}
-              </span>
-              <Button variant="outline" size="sm" onClick={() => signOut()}>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/profile">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">Profile</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4" />
-                Sign out
+                <span className="hidden sm:inline">Sign out</span>
               </Button>
             </>
           ) : (
