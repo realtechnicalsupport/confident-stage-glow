@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.award_xp_on_recording() FROM PUBLIC, anon, authenticated;
