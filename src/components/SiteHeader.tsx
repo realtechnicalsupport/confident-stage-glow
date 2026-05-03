@@ -62,11 +62,6 @@ export const SiteHeader = ({ transparent = false }: { transparent?: boolean }) =
                 <span className="hidden sm:inline">Sign out</span>
               </Button>
             </>
-              <Button variant="ghost" size="sm" onClick={() => signOut()}>
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign out</span>
-              </Button>
-            </>
           ) : (
             <Button variant={onHome ? "spotlight" : "outline"} size="sm" asChild>
               <Link to="/login">Log in / Sign up</Link>
