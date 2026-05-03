@@ -11,6 +11,7 @@ import Interviews from "./pages/tracks/Interviews.tsx";
 import BodyLanguage from "./pages/tracks/BodyLanguage.tsx";
 import Login from "./pages/Login.tsx";
 import Profile from "./pages/Profile.tsx";
+import Leaderboard from "./pages/Leaderboard.tsx";
 import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
