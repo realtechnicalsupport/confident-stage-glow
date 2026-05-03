@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useSyncedStreak, useRecordings } from "@/hooks/useRecordings";
+import { useMyXp } from "@/hooks/useLeaderboard";
+import { rankFor, rankProgress, ALL_RANKS } from "@/lib/rank";
 import { cn } from "@/lib/utils";
 
 type Challenge = {
