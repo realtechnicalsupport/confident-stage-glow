@@ -158,6 +158,48 @@ const Profile = () => {
               </div>
             ))}
           </div>
+
+          {/* Rank card */}
+          <div className="mt-5 relative bg-card-gradient border border-primary/40 rounded-2xl p-6 overflow-hidden">
+            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
+            <div className="flex items-center justify-between gap-4 flex-wrap relative">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-warm grid place-items-center text-2xl text-primary-foreground">
+                  {rank.emblem}
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-primary font-semibold">
+                    Rank · Tier {rank.tier}
+                  </p>
+                  <p className="font-display text-2xl font-semibold">{rank.name}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="font-display text-3xl font-semibold tabular-nums">
+                  {xp} <span className="text-sm text-muted-foreground font-sans font-normal">XP</span>
+                </div>
+                <Link to="/leaderboard" className="text-xs text-muted-foreground hover:text-foreground">
+                  See leaderboard →
+                </Link>
+              </div>
+            </div>
+            <div className="mt-5 relative">
+              <div className="flex items-center justify-between text-xs font-mono mb-2 text-muted-foreground">
+                <span>{rank.name}</span>
+                <span>
+                  {rank.next == null
+                    ? "Top tier reached"
+                    : `${rank.next - xp} XP to ${ALL_RANKS[rank.tier]?.name}`}
+                </span>
+              </div>
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-warm rounded-full transition-all duration-700"
+                  style={{ width: `${rProg.pct}%` }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
