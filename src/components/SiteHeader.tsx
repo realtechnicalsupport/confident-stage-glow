@@ -45,12 +45,23 @@ export const SiteHeader = ({ transparent = false }: { transparent?: boolean }) =
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/leaderboard">
+                  <Trophy className="h-4 w-4" />
+                  <span className="hidden sm:inline">Leaderboard</span>
+                </Link>
+              </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link to="/profile">
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
               </Button>
+              <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign out</span>
+              </Button>
+            </>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sign out</span>
