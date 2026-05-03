@@ -35,6 +35,9 @@ const Profile = () => {
   const { user, loading, signOut } = useAuth();
   const { count: streak, practicedToday } = useSyncedStreak();
   const { items } = useRecordings();
+  const { xp } = useMyXp();
+  const rank = rankFor(xp);
+  const rProg = rankProgress(xp);
   const [bestStreak, setBestStreak] = useState<number>(0);
 
   // Track best streak locally
