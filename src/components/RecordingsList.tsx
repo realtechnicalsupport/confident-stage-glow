@@ -3,6 +3,7 @@ import { useRecordings } from "@/hooks/useRecordings";
 import { Button } from "@/components/ui/button";
 import { Trash2, CloudOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import { RecordingFeedback } from "./RecordingFeedback";
 
 const fmt = (ms: number) => {
   const s = Math.floor(ms / 1000);
@@ -61,6 +62,7 @@ export const RecordingsList = () => {
                 </Button>
               </div>
               {r.signedUrl && <audio controls src={r.signedUrl} className="w-full" />}
+              <RecordingFeedback recordingId={r.id} />
             </li>
           ))}
         </ul>

@@ -119,6 +119,56 @@ export type Database = {
         }
         Relationships: []
       }
+      recording_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          improvements: Json
+          model: string | null
+          next_drill: string | null
+          recording_id: string
+          scores: Json
+          strengths: Json
+          summary: string
+          transcript: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          improvements?: Json
+          model?: string | null
+          next_drill?: string | null
+          recording_id: string
+          scores?: Json
+          strengths?: Json
+          summary: string
+          transcript?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          improvements?: Json
+          model?: string | null
+          next_drill?: string | null
+          recording_id?: string
+          scores?: Json
+          strengths?: Json
+          summary?: string
+          transcript?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recording_feedback_recording_id_fkey"
+            columns: ["recording_id"]
+            isOneToOne: true
+            referencedRelation: "recordings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recordings: {
         Row: {
           created_at: string
