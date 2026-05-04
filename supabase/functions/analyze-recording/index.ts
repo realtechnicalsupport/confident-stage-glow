@@ -154,6 +154,7 @@ Deno.serve(async (req) => {
       );
     }
     const base64 = btoa(binary);
+    const audioBase64 = base64.replace(/^data:[^;]+;base64,/, "");
     const mime = blob.type || "audio/webm";
 
     const systemPrompt =
@@ -174,7 +175,7 @@ Deno.serve(async (req) => {
             role: "user",
             content: [
               { type: "text", text: userText },
-              { type: "input_audio", input_audio: { data: base64, format: mime.includes("webm") ? "webm" : "mp3" } },
+              { type: "input_audio", input_audio: { data: audioBase64, format: mime.includes("webm") ? "webm" : "mp3" } },
             ],
           },
         ],
