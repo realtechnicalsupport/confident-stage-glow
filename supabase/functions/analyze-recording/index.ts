@@ -155,7 +155,6 @@ Deno.serve(async (req) => {
     }
     const base64 = btoa(binary);
     const mime = blob.type || "audio/webm";
-    const dataUrl = `data:${mime};base64,${base64}`;
 
     const systemPrompt =
       "You are an expert public-speaking coach. Listen to the user's short practice recording and return concise, actionable, encouraging feedback. Be specific. Score honestly on a 0-100 scale.";
@@ -175,7 +174,7 @@ Deno.serve(async (req) => {
             role: "user",
             content: [
               { type: "text", text: userText },
-              { type: "input_audio", input_audio: { data: dataUrl, format: mime.includes("webm") ? "webm" : "mp3" } },
+              { type: "input_audio", input_audio: { data: base64, format: mime.includes("webm") ? "webm" : "mp3" } },
             ],
           },
         ],
